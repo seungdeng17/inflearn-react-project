@@ -29,7 +29,7 @@ function getIsCallEffect(value) {
 }
 export function makeFetchSaga({
   fetchSaga,
-  canCache,
+  canCache = false,
   getTotalCount = (res) => res?.totalCount,
 }) {
   return function* (action) {
