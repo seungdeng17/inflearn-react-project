@@ -1,8 +1,17 @@
-import { Col, Descriptions, PageHeader, Row, Typography } from "antd";
+import {
+  Col,
+  Descriptions,
+  PageHeader,
+  Row,
+  Space,
+  Spin,
+  Typography,
+} from "antd";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router";
-import { actions } from "../state";
+import useFetchInfo from "../../common/hook/useFetchInfo";
+import { actions, Types } from "../state";
 
 /**
  *
@@ -20,10 +29,20 @@ export default function User({ match }) {
     dispatch(actions.fetchUser(name));
   }, [dispatch, name]);
 
+  const { isFetched, isSlow } = useFetchInfo(Types.FetchUser);
+
   return (
     <Row justify="center">
       <Col xs={24} md={20} lg={14}>
-        <PageHeader onBack={history.goBack} title="사용자 정보">
+        <PageHeader
+          onBack={history.goBack}
+          title={
+            <Space>
+              사용자 정보
+              {isSlow && <Spin size="small" />}
+            </Space>
+          }
+        >
           {user && (
             <Descriptions layout="vertical" bordered column={1}>
               <Descriptions.Item label="이름">
@@ -36,7 +55,7 @@ export default function User({ match }) {
               <Descriptions.Item label="수정 내역">수정 내역</Descriptions.Item>
             </Descriptions>
           )}
-          {!user && (
+          {!user && isFetched && (
             <Typography.Text>존재하지 않는 사용자 입니다.</Typography.Text>
           )}
         </PageHeader>

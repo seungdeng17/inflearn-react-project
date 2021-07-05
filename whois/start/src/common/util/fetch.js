@@ -1,9 +1,9 @@
-import { put, delay, fork, cancel, select, call } from 'redux-saga/effects';
-import lruCache from 'lru-cache';
-import { FetchStatus } from '../constant';
-import { callApi } from './api';
-import { actions } from '../state';
-import { FETCH_PAGE, FETCH_KEY } from '../redux-helper';
+import { put, delay, fork, cancel, select, call } from "redux-saga/effects";
+import lruCache from "lru-cache";
+import { FetchStatus } from "../constant";
+import { callApi } from "./api";
+import { actions } from "../state";
+import { FETCH_PAGE, FETCH_KEY } from "../redux-helper";
 
 function makeCheckSlowSaga(actionType, fetchKey) {
   return function* () {
@@ -13,7 +13,7 @@ function makeCheckSlowSaga(actionType, fetchKey) {
         actionType,
         fetchKey,
         isSlow: true,
-      }),
+      })
     );
   };
 }
@@ -30,14 +30,14 @@ function getIsCallEffect(value) {
 export function makeFetchSaga({
   fetchSaga,
   canCache,
-  getTotalCount = res => res?.totalCount,
+  getTotalCount = (res) => res?.totalCount,
 }) {
   return function* (action) {
     const { type: actionType } = action;
     const fetchPage = action[FETCH_PAGE];
     const fetchKey = getFetchKey(action);
     const nextPage = yield select(
-      state => state.common.fetchInfo.nextPageMap[actionType]?.[fetchKey] || 0,
+      (state) => state.common.fetchInfo.nextPageMap[actionType]?.[fetchKey] || 0
     );
     const page = fetchPage !== undefined ? fetchPage : nextPage;
     const iterStack = [];
@@ -58,7 +58,7 @@ export function makeFetchSaga({
             actionType,
             fetchKey,
             status: FetchStatus.Request,
-          }),
+          })
         );
         const apiParam = value.payload.args[0];
         const cacheKey = getApiCacheKey(actionType, apiParam);
@@ -89,7 +89,7 @@ export function makeFetchSaga({
             status: isSuccess ? FetchStatus.Success : FetchStatus.Fail,
             totalCount,
             nextPage: isSuccess ? page + 1 : page,
-            errorMessage: isSuccess ? '' : apiResult.resultMessage,
+            errorMessage: isSuccess ? "" : apiResult.resultMessage,
           };
         }
       } else if (value !== undefined) {
@@ -118,7 +118,7 @@ export function getApiCacheKey(actionType, { apiHost, url, params }) {
   if (keys.length) {
     return (
       prefix +
-      keys.sort().reduce((acc, key) => `${acc}&${key}=${params[key]}`, '')
+      keys.sort().reduce((acc, key) => `${acc}&${key}=${params[key]}`, "")
     );
   } else {
     return prefix;
@@ -136,13 +136,13 @@ function getIsGeneratorFunction(obj) {
     return false;
   }
   if (
-    'GeneratorFunction' === constructor.name ||
-    'GeneratorFunction' === constructor.displayName
+    "GeneratorFunction" === constructor.name ||
+    "GeneratorFunction" === constructor.displayName
   ) {
     return true;
   }
   const proto = constructor.prototype;
-  return 'function' === typeof proto.next && 'function' === typeof proto.throw;
+  return "function" === typeof proto.next && "function" === typeof proto.throw;
 }
 
 /**
@@ -152,7 +152,7 @@ function getIsGeneratorFunction(obj) {
 export function deleteApiCache(actionType) {
   let keys = apiCache.keys();
   if (actionType) {
-    keys = keys.filter(key => key.includes(actionType));
+    keys = keys.filter((key) => key.includes(actionType));
   }
   for (const key of keys) {
     apiCache.del(key);

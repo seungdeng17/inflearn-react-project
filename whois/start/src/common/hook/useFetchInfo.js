@@ -1,7 +1,7 @@
-import { getFetchKey } from '../util/fetch';
-import { useSelector, shallowEqual } from 'react-redux';
-import { FetchStatus } from '../constant';
-import { FETCH_KEY } from '../redux-helper';
+import { getFetchKey } from "../util/fetch";
+import { useSelector, shallowEqual } from "react-redux";
+import { FetchStatus } from "../constant";
+import { FETCH_KEY } from "../redux-helper";
 
 export default function useFetchInfo(actionType, fetchKey) {
   const _fetchKey = getFetchKey({
@@ -9,7 +9,7 @@ export default function useFetchInfo(actionType, fetchKey) {
     [FETCH_KEY]: fetchKey,
   });
   return useSelector(
-    state => ({
+    (state) => ({
       fetchStatus:
         state.common.fetchInfo.fetchStatusMap[actionType]?.[_fetchKey],
       isFetching:
@@ -28,6 +28,6 @@ export default function useFetchInfo(actionType, fetchKey) {
       errorMessage:
         state.common.fetchInfo.errorMessageMap[actionType]?.[_fetchKey],
     }),
-    shallowEqual,
+    shallowEqual
   );
 }
