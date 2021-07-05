@@ -7,7 +7,6 @@ import { SettingFilled } from "@ant-design/icons";
  * @param {object} param
  * @param {() => void} param.logout
  */
-
 export default function Settings({ logout }) {
   return (
     <Dropdown
