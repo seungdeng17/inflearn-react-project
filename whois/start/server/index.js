@@ -1,21 +1,21 @@
-const express = require('express');
-const sqlite3 = require('sqlite3');
-const cors = require('cors');
-const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
+const express = require("express");
+const sqlite3 = require("sqlite3");
+const cors = require("cors");
+const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
 
 const app = express();
 app.use(
   cors({
-    origin: 'http://localhost:3000',
+    origin: "http://localhost:3000",
     credentials: true,
-  }),
+  })
 );
 app.use(bodyParser.json());
 app.use(cookieParser());
 
-const db = new sqlite3.Database('./data.db', sqlite3.OPEN_READWRITE);
-app.get('/user/search', (req, res) => {
+const db = new sqlite3.Database("./data.db", sqlite3.OPEN_READWRITE);
+app.get("/user/search", (req, res) => {
   setTimeout(() => {
     const keyword = req.query.keyword;
     db.all(
@@ -26,11 +26,11 @@ app.get('/user/search', (req, res) => {
           throw err;
         }
         res.send(makeResponse({ data: rows }));
-      },
+      }
     );
   }, 1);
 });
-app.get('/history', (req, res) => {
+app.get("/history", (req, res) => {
   setTimeout(() => {
     const { name, page = 0 } = req.query;
     // @ts-ignore
@@ -42,14 +42,14 @@ app.get('/history', (req, res) => {
       if (err) {
         throw err;
       }
-      db.all('SELECT count(*) as totalCount FROM history', [], (err, rows2) => {
+      db.all("SELECT count(*) as totalCount FROM history", [], (err, rows2) => {
         const totalCount = rows2[0].totalCount;
         res.send(makeResponse({ data: rows, totalCount }));
       });
     });
   }, 1);
 });
-app.post('/user/update', (req, res) => {
+app.post("/user/update", (req, res) => {
   setTimeout(() => {
     const { key, name, value, oldValue } = req.body;
     const sql = `UPDATE user SET ${key} = ? WHERE name = ?`;
@@ -61,7 +61,7 @@ app.post('/user/update', (req, res) => {
       const date = new Date(new Date().getTime() + 9 * 3600 * 1000);
       const iso = date.toISOString();
       const dateStr = `${iso.substr(0, 10)} ${iso.substr(11, 8)}`;
-      const editor = req.cookies.token || 'unknown';
+      const editor = req.cookies.token || "unknown";
       const history = {
         editor,
         name,
@@ -87,20 +87,20 @@ app.post('/user/update', (req, res) => {
           }
           history.id = this.lastID;
           res.send(makeResponse({ data: { history } }));
-        },
+        }
       );
     });
   }, 1);
 });
 
-app.get('/auth/user', (req, res) => {
+app.get("/auth/user", (req, res) => {
   setTimeout(() => {
     const name = req.cookies.token;
     res.send(makeResponse({ data: { name } }));
   }, 1);
 });
 
-app.post('/auth/login', (req, res) => {
+app.post("/auth/login", (req, res) => {
   setTimeout(() => {
     const { name } = req.body;
     db.all(`SELECT * FROM user where name='${name}'`, [], (err, rows) => {
@@ -108,7 +108,7 @@ app.post('/auth/login', (req, res) => {
         throw err;
       }
       if (rows.length) {
-        res.cookie('token', name, {
+        res.cookie("token", name, {
           maxAge: COOKIE_MAX_AGE,
           httpOnly: true,
         });
@@ -117,17 +117,17 @@ app.post('/auth/login', (req, res) => {
         res.send(
           makeResponse({
             resultCode: -1,
-            resultMessage: '존재하지 않는 사용자입니다.',
-          }),
+            resultMessage: "존재하지 않는 사용자입니다.",
+          })
         );
       }
     });
   }, 1);
 });
 
-app.get('/auth/logout', (req, res) => {
+app.get("/auth/logout", (req, res) => {
   setTimeout(() => {
-    res.cookie('token', '', {
+    res.cookie("token", "", {
       maxAge: 0,
       httpOnly: true,
     });
@@ -135,38 +135,38 @@ app.get('/auth/logout', (req, res) => {
   }, 1);
 });
 
-app.post('/auth/signup', (req, res) => {
+app.post("/auth/signup", (req, res) => {
   setTimeout(() => {
     const { email } = req.body;
-    if (!email.includes('@')) {
+    if (!email.includes("@")) {
       res.send(
         makeResponse({
           resultCode: -1,
-          resultMessage: '이메일 형식이 아닙니다.',
-        }),
+          resultMessage: "이메일 형식이 아닙니다.",
+        })
       );
       return;
     }
-    const name = email.substr(0, email.lastIndexOf('@'));
+    const name = email.substr(0, email.lastIndexOf("@"));
     db.all(`SELECT * FROM user where name='${name}'`, [], (err, rows) => {
       if (err) {
         throw err;
       }
-      console.log('rows', rows, rows[0]);
+      console.log("rows", rows, rows[0]);
       if (rows.length) {
         res.send(
           makeResponse({
             resultCode: -1,
-            resultMessage: '이미 존재하는 사용자입니다.',
-          }),
+            resultMessage: "이미 존재하는 사용자입니다.",
+          })
         );
       } else {
         const sql = `INSERT INTO user(name, department, tag) VALUES (?,?,?)`;
-        db.run(sql, [name, '소속없음', ''], function (err) {
+        db.run(sql, [name, "소속없음", ""], function (err) {
           if (err) {
             return console.error(err.message);
           }
-          res.cookie('token', name, { maxAge: COOKIE_MAX_AGE, httpOnly: true });
+          res.cookie("token", name, { maxAge: COOKIE_MAX_AGE, httpOnly: true });
           res.send(makeResponse({ data: { name } }));
         });
       }
@@ -190,7 +190,7 @@ function makeResponse({ data, totalCount, resultCode, resultMessage }) {
     data,
     totalCount,
     resultCode: resultCode || 0,
-    resultMessage: resultMessage || '',
+    resultMessage: resultMessage || "",
   };
 }
 
