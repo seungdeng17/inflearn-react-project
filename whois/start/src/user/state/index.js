@@ -1,12 +1,14 @@
 import {
   createReducer,
   createSetValueAction,
+  FETCH_KEY,
   setValueReducer,
 } from "../../common/redux-helper";
 
 export const Types = {
   SetValue: "user/SetValue",
   FetchUser: "user/FetchUser",
+  FetchUpdateUser: "user/FetchUpateUser",
 };
 
 export const actions = {
@@ -14,6 +16,13 @@ export const actions = {
   fetchUser: (name) => ({
     type: Types.FetchUser,
     name,
+  }),
+  fetchUpdateUser: ({ user, key, value, fetchKey }) => ({
+    type: Types.FetchUpdateUser,
+    user,
+    key,
+    value,
+    [FETCH_KEY]: fetchKey,
   }),
 };
 
