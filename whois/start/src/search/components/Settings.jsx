@@ -3,8 +3,8 @@ import { Button, Dropdown, Menu } from "antd";
 import { SettingFilled } from "@ant-design/icons";
 
 /**
- * 
- * @param {object} param 
+ *
+ * @param {object} param
  * @param {() => void} param.logout
  */
 
@@ -13,7 +13,9 @@ export default function Settings({ logout }) {
     <Dropdown
       overlay={
         <Menu>
-          <Menu.Item key="logout" onClick={logout}>로그아웃</Menu.Item>
+          <Menu.Item key="logout" onClick={logout}>
+            로그아웃
+          </Menu.Item>
         </Menu>
       }
       trigger={["click"]}
