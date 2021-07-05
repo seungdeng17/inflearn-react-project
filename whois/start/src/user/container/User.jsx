@@ -8,6 +8,7 @@ import Department from "./Department";
 import TagList from "./TagList";
 import History from "../../common/components/History";
 import FetchLabel from "../components/FetchLabel";
+import useNeedLogin from "../../common/hook/useNeedLogin";
 
 /**
  *
@@ -15,6 +16,7 @@ import FetchLabel from "../components/FetchLabel";
  * @param {import('react-router').match} param.match
  */
 export default function User({ match }) {
+  useNeedLogin();
   const dispatch = useDispatch();
   const history = useHistory();
   // @ts-ignore

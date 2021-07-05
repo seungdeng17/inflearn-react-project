@@ -5,8 +5,11 @@ import SearchInput from "./SearchInput";
 import History from "../../common/components/History";
 import { useDispatch, useSelector } from "react-redux";
 import { actions } from "../state";
+import useNeedLogin from "../../common/hook/useNeedLogin";
+import { actions as authActions } from "../../auth/state";
 
 export default function Search() {
+  useNeedLogin();
   const dispatch = useDispatch();
 
   // @ts-ignore
@@ -16,11 +19,15 @@ export default function Search() {
     dispatch(actions.fetchAllHistory());
   }, [dispatch]);
 
+  function logout() {
+    dispatch(authActions.fetchLogout());
+  }
+
   return (
     <>
       <Row justify="end" style={{ padding: 20 }}>
         <Col>
-          <Settings logout={() => {}} />
+          <Settings logout={logout} />
         </Col>
       </Row>
       <Row justify="center" style={{ marginTop: 100 }}>

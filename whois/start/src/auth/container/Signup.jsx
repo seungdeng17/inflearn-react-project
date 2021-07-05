@@ -1,11 +1,22 @@
 import { Button, Form, Input } from "antd";
 import React from "react";
+import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import AuthLayout from "../components/AuthLayout";
+import useBlockLoginUser from "../hook/useBlockLoginUser";
+import { actions } from "../state";
 
 export default function Signup() {
+  useBlockLoginUser();
+  const dispatch = useDispatch();
+
+  function onFinish({ name }) {
+    const email = `${name}${EMAIL_SUFFIX}`;
+    dispatch(actions.fetchSignup(email));
+  }
+
   return (
-    <AuthLayout onFinish={() => {}}>
+    <AuthLayout onFinish={onFinish}>
       <Form.Item
         name="name"
         rules={[{ required: true, message: "Please input your email!" }]}
