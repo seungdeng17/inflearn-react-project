@@ -21,6 +21,8 @@ export default function Search() {
   // @ts-ignore
   const history = useSelector((state) => state.search.history);
   // @ts-ignore
+  const totalCount = useSelector((state) => state.search.totalCount);
+  // @ts-ignore
   const page = useSelector((state) => state.search.page);
   const { isSlow } = useFetchInfo(Types.FetchAllHistory);
 
@@ -54,7 +56,11 @@ export default function Search() {
       <Row justify="center" style={{ marginTop: 50 }}>
         <Col xs={20} md={16} lg={12}>
           <History items={history} />
-          <div ref={history.length ? targetRef : null} />
+          <div
+            ref={
+              history.length && history.length < totalCount ? targetRef : null
+            }
+          />
           {isSlow && (
             <div
               style={{
