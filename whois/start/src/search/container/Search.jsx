@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Col, Row, Spin, Typography } from "antd";
 import Settings from "../components/Settings";
 import SearchInput from "./SearchInput";
@@ -20,14 +20,16 @@ export default function Search() {
 
   // @ts-ignore
   const history = useSelector((state) => state.search.history);
+  // @ts-ignore
+  const page = useSelector((state) => state.search.page);
   const { isSlow } = useFetchInfo(Types.FetchAllHistory);
 
-  const targetRef = useInfinityScroll(() =>
-    dispatch(actions.fetchAllHistory())
-  );
+  const targetRef = useInfinityScroll(() => {
+    dispatch(actions.fetchAllHistory({ page: page + 1 }));
+  });
 
   useEffect(() => {
-    dispatch(actions.fetchAllHistory());
+    dispatch(actions.fetchAllHistory({ page: 0 }));
   }, [dispatch]);
 
   return (

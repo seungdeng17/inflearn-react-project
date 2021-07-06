@@ -1,6 +1,7 @@
 import {
   createReducer,
   createSetValueAction,
+  FETCH_PAGE,
   setValueReducer,
 } from "../../common/redux-helper";
 
@@ -9,6 +10,7 @@ export const Types = {
   FetchAutoComplete: "search/FetchAutoComplete",
   FetchAllHistory: "search/FetchAllHistory",
   AddHistory: "search/AddHistory",
+  ResetAllHistoryPage: "search/ResetAllHistoryPage",
 };
 
 export const actions = {
@@ -17,7 +19,11 @@ export const actions = {
     type: Types.FetchAutoComplete,
     keyword,
   }),
-  fetchAllHistory: () => ({ type: Types.FetchAllHistory }),
+  fetchAllHistory: ({ page }) => ({
+    type: Types.FetchAllHistory,
+    page,
+    [FETCH_PAGE]: page,
+  }),
   addHistory: (history) => ({ type: Types.AddHistory, history }),
 };
 

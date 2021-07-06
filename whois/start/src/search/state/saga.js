@@ -14,14 +14,22 @@ function* fetchAutoComplete({ keyword }) {
   }
 }
 
-function* fetchAllHistory(_, page) {
-  const { isSuccess, data, totalCount } = yield call(callApi, {
+function* fetchAllHistory({ page }) {
+  const { isSuccess, data } = yield call(callApi, {
     url: "/history",
-    params: { page },
+    params: {
+      page,
+    },
   });
 
   if (isSuccess && data) {
-    yield put(actions.addHistory(data));
+    if (page) {
+      yield put(actions.addHistory(data));
+      yield put(actions.setValue("page", page));
+    } else {
+      yield put(actions.setValue("history", data));
+      yield put(actions.setValue("page", page));
+    }
   }
 }
 
