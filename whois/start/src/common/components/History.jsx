@@ -1,6 +1,6 @@
 import { Space, Tag, Timeline, Typography } from "antd";
 import { diffWords } from "diff";
-import React, { memo } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 
 /**
@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
  * @param {object} param
  * @param {object[]} param.items
  */
-function History({ items }) {
+export default function History({ items }) {
   return (
     <>
       <Timeline>
@@ -82,9 +82,3 @@ function getDiff({ column, before, after }) {
 
   return diffWords(before, after);
 }
-
-function isEqual(prevProps, nextProps) {
-  return prevProps.items.length === nextProps.items.length;
-}
-
-export default memo(History, isEqual);

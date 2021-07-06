@@ -24,7 +24,7 @@ function* fetchAutoComplete({ keyword }) {
 function* fetchAllHistory({ page }) {
   const history = yield select((state) => state.search.history);
   const _totalCount = yield select((state) => state.search.totalCount);
-  if (history.length >= _totalCount) return console.log(history.length);
+  if (page && history.length >= _totalCount) return;
 
   const { isSuccess, data, totalCount } = yield call(callApi, {
     url: "/history",
