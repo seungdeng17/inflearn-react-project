@@ -36,12 +36,11 @@ function* fetchAllHistory({ page }) {
   if (isSuccess && data) {
     if (page) {
       yield put(actions.addHistory(data));
-      yield put(actions.setValue("page", page));
     } else {
       yield put(actions.setValue("history", data));
-      yield put(actions.setValue("page", page));
       yield put(actions.setValue("totalCount", totalCount));
     }
+    yield put(actions.setValue("page", page));
   }
 }
 

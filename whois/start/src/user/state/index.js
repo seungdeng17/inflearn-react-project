@@ -2,6 +2,7 @@ import {
   createReducer,
   createSetValueAction,
   FETCH_KEY,
+  FETCH_PAGE,
   NOT_IMMUTABLE,
   setValueReducer,
 } from "../../common/redux-helper";
@@ -13,6 +14,7 @@ export const Types = {
   FetchUserHistory: "user/FetchUserHistory",
   AddHistory: "user/AddHistory",
   Initialize: "user/Initialize",
+  AddHistoryPage: "user/AddHistoryPage",
 };
 
 export const actions = {
@@ -28,9 +30,11 @@ export const actions = {
     value,
     [FETCH_KEY]: fetchKey,
   }),
-  fetchUserHistory: (name) => ({
+  fetchUserHistory: ({ name, page }) => ({
     type: Types.FetchUserHistory,
     name,
+    page,
+    [FETCH_PAGE]: page,
   }),
   addHistory: (history) => ({
     type: Types.AddHistory,
@@ -39,6 +43,10 @@ export const actions = {
   initialize: () => ({
     type: Types.Initialize,
     [NOT_IMMUTABLE]: true,
+  }),
+  addHistoryPage: (history) => ({
+    type: Types.AddHistoryPage,
+    history,
   }),
 };
 
@@ -52,6 +60,9 @@ const reducer = createReducer(INITIAL_STATE, {
   [Types.AddHistory]: (state, action) =>
     (state.userHistory = [action.history, ...state.userHistory]),
   [Types.Initialize]: () => INITIAL_STATE,
+  [Types.AddHistoryPage]: (state, action) => {
+    state.userHistory = [...state.userHistory, ...action.history];
+  },
 });
 
 export default reducer;

@@ -32,14 +32,21 @@ function* fetchUpdateUser({ user, key, value }) {
   }
 }
 
-function* fetchUserHistory({ name }) {
+function* fetchUserHistory({ name, page }) {
   const { isSuccess, data } = yield call(callApi, {
     url: "/history",
-    params: { name },
+    params: { name, page },
   });
 
   if (isSuccess && data) {
-    yield put(actions.setValue("userHistory", data));
+    if (page) {
+      yield put(actions.addHistoryPage(data));
+    } else {
+      yield put(actions.setValue("userHistory", data));
+    }
+    yield put(actions.setValue("page", page));
+
+    if (!data.length) yield put(actions.setValue("noMoreHistory", true));
   }
 }
 

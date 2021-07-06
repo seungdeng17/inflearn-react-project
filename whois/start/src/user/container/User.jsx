@@ -1,6 +1,6 @@
 import { Col, Descriptions, PageHeader, Row, Typography } from "antd";
 import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import { useHistory } from "react-router";
 import useFetchInfo from "../../common/hook/useFetchInfo";
 import { actions, Types } from "../state";
@@ -9,6 +9,7 @@ import TagList from "./TagList";
 import History from "../../common/components/History";
 import FetchLabel from "../components/FetchLabel";
 import useNeedLogin from "../../common/hook/useNeedLogin";
+import useInfinityScroll from "../../common/hook/useInfinityScroll";
 
 /**
  *
@@ -19,15 +20,24 @@ export default function User({ match }) {
   useNeedLogin();
   const dispatch = useDispatch();
   const history = useHistory();
-  // @ts-ignore
-  const user = useSelector((state) => state.user.user);
-  // @ts-ignore
-  const userHistory = useSelector((state) => state.user.userHistory);
+  const [user, userHistory, page, noMoreHistory] = useSelector(
+    (state) => [
+      // @ts-ignore
+      state.user.user,
+      // @ts-ignore
+      state.user.userHistory,
+      // @ts-ignore
+      state.user.page,
+      // @ts-ignore
+      state.user.noMoreHistory,
+    ],
+    shallowEqual
+  );
 
   const name = match.params.name;
   useEffect(() => {
     dispatch(actions.fetchUser(name));
-    dispatch(actions.fetchUserHistory(name));
+    dispatch(actions.fetchUserHistory({ name, page: 0 }));
   }, [dispatch, name]);
 
   useEffect(() => {
@@ -37,6 +47,11 @@ export default function User({ match }) {
   }, [dispatch]);
 
   const { isFetched } = useFetchInfo(Types.FetchUser);
+
+  const targetRef = useInfinityScroll(() => {
+    if (noMoreHistory) return console.log("io callback");
+    dispatch(actions.fetchUserHistory({ name, page: page + 1 }));
+  });
 
   return (
     <Row justify="center">
@@ -76,6 +91,7 @@ export default function User({ match }) {
               </Descriptions.Item>
               <Descriptions.Item label="수정 내역">
                 <History items={userHistory} />
+                <div ref={targetRef} />
               </Descriptions.Item>
             </Descriptions>
           )}
