@@ -1,4 +1,11 @@
-import { all, call, put, takeEvery, takeLeading } from "redux-saga/effects";
+import {
+  all,
+  call,
+  put,
+  select,
+  takeEvery,
+  takeLeading,
+} from "redux-saga/effects";
 import { actions, Types } from "./index";
 import { callApi } from "../../common/util/api";
 import { makeFetchSaga } from "../../common/util/fetch";
@@ -15,7 +22,11 @@ function* fetchAutoComplete({ keyword }) {
 }
 
 function* fetchAllHistory({ page }) {
-  const { isSuccess, data } = yield call(callApi, {
+  const history = yield select((state) => state.search.history);
+  const _totalCount = yield select((state) => state.search.totalCount);
+  if (history.length >= _totalCount) return console.log(history.length);
+
+  const { isSuccess, data, totalCount } = yield call(callApi, {
     url: "/history",
     params: {
       page,
@@ -29,6 +40,7 @@ function* fetchAllHistory({ page }) {
     } else {
       yield put(actions.setValue("history", data));
       yield put(actions.setValue("page", page));
+      yield put(actions.setValue("totalCount", totalCount));
     }
   }
 }
