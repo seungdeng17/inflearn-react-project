@@ -1,6 +1,6 @@
 import { Space, Tag, Timeline, Typography } from "antd";
 import { diffWords } from "diff";
-import React from "react";
+import React, { memo } from "react";
 import { Link } from "react-router-dom";
 
 /**
@@ -8,41 +8,49 @@ import { Link } from "react-router-dom";
  * @param {object} param
  * @param {object[]} param.items
  */
-export default function History({ items }) {
+function History({ items }) {
   return (
-    <Timeline>
-      {items.map((item) => (
-        <Timeline.Item key={item.id}>
-          <Space direction="vertical">
-            <Space style={{ flexWrap: "wrap" }}>
-              <Tag>
-                <Link to={`/user/${item.editor}`}>
-                  수정한 사람: {item.editor}
-                </Link>
-              </Tag>
-              <Tag>
-                <Link to={`/user/${item.name}`}>수정된 사람: {item.name}</Link>
-              </Tag>
-              <Tag>날짜: {item.date}</Tag>
-              <Tag>속성: {COLUMN_MAP[item.column]}</Tag>
+    <>
+      <Timeline>
+        {items.map((item) => (
+          <Timeline.Item key={item.id}>
+            <Space direction="vertical">
+              <Space style={{ flexWrap: "wrap" }}>
+                <Tag>
+                  <Link to={`/user/${item.editor}`}>
+                    수정한 사람: {item.editor}
+                  </Link>
+                </Tag>
+                <Tag>
+                  <Link to={`/user/${item.name}`}>
+                    수정된 사람: {item.name}
+                  </Link>
+                </Tag>
+                <Tag>날짜: {item.date}</Tag>
+                <Tag>속성: {COLUMN_MAP[item.column]}</Tag>
+              </Space>
+              <Space>
+                {getDiff(item).map((diff, index) => (
+                  <Typography.Text
+                    key={index}
+                    delete={diff.removed}
+                    style={{
+                      color: diff.added
+                        ? "blue"
+                        : diff.removed
+                        ? "red"
+                        : "grey",
+                    }}
+                  >
+                    {diff.value}
+                  </Typography.Text>
+                ))}
+              </Space>
             </Space>
-            <Space>
-              {getDiff(item).map((diff, index) => (
-                <Typography.Text
-                  key={index}
-                  delete={diff.removed}
-                  style={{
-                    color: diff.added ? "blue" : diff.removed ? "red" : "grey",
-                  }}
-                >
-                  {diff.value}
-                </Typography.Text>
-              ))}
-            </Space>
-          </Space>
-        </Timeline.Item>
-      ))}
-    </Timeline>
+          </Timeline.Item>
+        ))}
+      </Timeline>
+    </>
   );
 }
 
@@ -74,3 +82,9 @@ function getDiff({ column, before, after }) {
 
   return diffWords(before, after);
 }
+
+function isEqual(prevProps, nextProps) {
+  return prevProps.items.length === nextProps.items.length;
+}
+
+export default memo(History, isEqual);

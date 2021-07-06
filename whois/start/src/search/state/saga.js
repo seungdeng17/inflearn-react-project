@@ -15,12 +15,13 @@ function* fetchAutoComplete({ keyword }) {
 }
 
 function* fetchAllHistory(_, page) {
-  const { isSuccess, data } = yield call(callApi, {
+  const { isSuccess, data, totalCount } = yield call(callApi, {
     url: "/history",
+    params: { page },
   });
 
   if (isSuccess && data) {
-    yield put(actions.setValue("history", data));
+    yield put(actions.addHistory(data));
   }
 }
 

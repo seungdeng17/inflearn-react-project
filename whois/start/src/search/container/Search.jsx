@@ -1,27 +1,34 @@
-import React, { useEffect } from "react";
-import { Col, Row, Typography } from "antd";
+import React, { useEffect, useState } from "react";
+import { Col, Row, Spin, Typography } from "antd";
 import Settings from "../components/Settings";
 import SearchInput from "./SearchInput";
 import History from "../../common/components/History";
 import { useDispatch, useSelector } from "react-redux";
-import { actions } from "../state";
+import { actions, Types } from "../state";
 import useNeedLogin from "../../common/hook/useNeedLogin";
 import { actions as authActions } from "../../auth/state";
+import useInfinityScroll from "../../common/hook/useInfinityScroll";
+import useFetchInfo from "../../common/hook/useFetchInfo";
 
 export default function Search() {
   useNeedLogin();
   const dispatch = useDispatch();
 
+  function logout() {
+    dispatch(authActions.fetchLogout());
+  }
+
   // @ts-ignore
   const history = useSelector((state) => state.search.history);
+  const { isSlow } = useFetchInfo(Types.FetchAllHistory);
+
+  const targetRef = useInfinityScroll(() =>
+    dispatch(actions.fetchAllHistory())
+  );
 
   useEffect(() => {
     dispatch(actions.fetchAllHistory());
   }, [dispatch]);
-
-  function logout() {
-    dispatch(authActions.fetchLogout());
-  }
 
   return (
     <>
@@ -45,6 +52,18 @@ export default function Search() {
       <Row justify="center" style={{ marginTop: 50 }}>
         <Col xs={20} md={16} lg={12}>
           <History items={history} />
+          <div ref={history.length ? targetRef : null} />
+          {isSlow && (
+            <div
+              style={{
+                position: "fixed",
+                top: 30,
+                left: 30,
+              }}
+            >
+              <Spin size="large" />
+            </div>
+          )}
         </Col>
       </Row>
     </>
